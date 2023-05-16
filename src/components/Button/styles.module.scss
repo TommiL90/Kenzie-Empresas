@@ -1,0 +1,19 @@
+@use "../../scss/abstracts/" as *;
+
+.button{
+    background-color: $color-brand-1;
+    width: 100%;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    border: 1px solid $color-brand-1;
+    color: $color-grey-5;
+}
+
+.button:hover{
+    background-color: $color-brand-2;
+    border: 1px solid $color-brand-2;
+}
