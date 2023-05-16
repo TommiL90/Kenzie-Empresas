@@ -2,9 +2,7 @@
 import Header from '@/components/Header'
 import React from 'react'
 
-const route: { name: string; path: string } = {
-    name: 'Admin',      
-}
+
 
 const AdminPage = () => {
   return (
