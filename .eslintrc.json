@@ -1,8 +1,7 @@
 {
   "extends": [
-    // "airbnb-typescript/base",
-    "next/core-web-vitals",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "next/core-web-vitals"
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": ["react", "@typescript-eslint", "prettier"],
@@ -13,7 +12,8 @@
   },
   "rules": {
     "max-len": ["error", 140],
-    "quotes": [2, "single", { "avoidEscape": true }]
+    "quotes": ["error", "double", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "camelcase":"error"
   }
 }
 

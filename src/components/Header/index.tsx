@@ -1,9 +1,6 @@
 "use client";
+import React from "react";
 import Link from "next/link";
-import styles from "./styles.module.scss";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { useState } from "react";
-import Drawer from "../Drawer";
 
 interface IRoute {
   path: string;
@@ -14,29 +11,11 @@ interface HeaderProps {
   routes: IRoute[];
 }
 
-const Header = ({ routes }: HeaderProps) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const handleDrawerClose = () => {
-    setIsDrawerOpen(false);
-  };
-
+const NavBar: React.FC<HeaderProps> = ({ routes }) => {
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
+    <header className="shadow-default">
+      <div className="container flex h-20 items-center justify-between">
         <h2>Kenzie Empresas</h2>
-        {/* <button onClick={() => setIsDrawerOpen(true)}>
-          <GiHamburgerMenu />
-        </button>
-        <Drawer isOpen={isDrawerOpen} onClose={handleDrawerClose}>
-          <nav>
-            {routes.map((route, index) => (
-              <Link key={index} href={route.path}>
-                {route.label}
-              </Link>
-            ))}
-          </nav>
-        </Drawer> */}
         <nav>
           {routes.map((route, index) => (
             <Link key={index} href={route.path}>
@@ -49,4 +28,4 @@ const Header = ({ routes }: HeaderProps) => {
   );
 };
 
-export default Header;
+export default NavBar;

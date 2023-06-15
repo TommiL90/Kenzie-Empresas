@@ -1,14 +1,11 @@
 "use client";
-import Container from "@/components/Container";
 import Header from "@/components/Header";
 import Link from "next/link";
-import styles from "./styles.module.scss";
-import Button from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { TRegisterFormValues, registerSchema } from "./schema";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface IRoute {
   path: string;
@@ -18,12 +15,12 @@ interface IRoute {
 const routes: IRoute[] = [
   {
     path: "/",
-    label: "Home",
+    label: "Home"
   },
   {
     path: "/login",
-    label: "Login",
-  },
+    label: "Login"
+  }
 ];
 
 function Login() {
@@ -31,9 +28,9 @@ function Login() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<TRegisterFormValues>({
-    resolver: yupResolver(registerSchema),
+    resolver: zodResolver(registerSchema)
   });
 
   const submit: SubmitHandler<TRegisterFormValues> = (formData) => {
@@ -43,49 +40,37 @@ function Login() {
   return (
     <>
       <Header routes={routes} />
-      <main className={styles.main}>
-        <Container>
-          <div className={styles.content}>
-            <form className={styles.form} onSubmit={handleSubmit(submit)}>
-              <h1>Cadastre-se</h1>
-              <Input
-                placeholder="Seu Nome"
-                type="text"
-                {...register("name")}
-                disabled={false}
-                error={errors.name}
-              />
-              <Input
-                placeholder="Seu e-mail"
-                type="email"
-                {...register("email")}
-                disabled={false}
-                error={errors.email}
-              />
-              <Input
-                placeholder="Seu password"
-                type="password"
-                {...register("password")}
-                disabled={false}
-                error={errors.password}
-              />
-              <Input
-                placeholder="Repita seu password"
-                type="password"
-                {...register("repeatPassword")}
-                disabled={false}
-                error={errors.repeatPassword}
-              />
-              <div className={styles.buttonContainer}>
-                <Button>Login</Button>
-                <p>ou</p>
-                <Link className={styles.link} href={routes[1].path}>
-                  Retornar
-                </Link>
-              </div>
-            </form>
-          </div>
-        </Container>
+      <main className="flex h-screen w-screen items-center justify-center bg-[url('../../public/assets/Rectangle_home.svg')]">
+        <div className="flex h-full w-full items-center justify-center">
+          <form
+            className="flex h-[max-content] max-w-[506px] flex-col justify-center gap-8 bg-color-grey-6 p-10 opacity-90"
+            onSubmit={handleSubmit(submit)}>
+            <h1>Login</h1>
+            <p>Preencha os campos para realizar o cadastro</p>
+            <Input placeholder="Seu e-mail" type="email" {...register("email")} disabled={false} error={errors.email} />
+            <Input placeholder="Seu password" type="password" {...register("password")} disabled={false} error={errors.password} />
+            <Input
+              placeholder="Repita seu password"
+              type="password"
+              {...register("confirmPassword")}
+              disabled={false}
+              error={errors.confirmPassword}
+            />
+            <div className="flex flex-col gap-4 text-center">
+              <button
+                type="submit"
+                className="flex h-12 w-full items-center justify-center border border-color-brand-1 bg-color-brand-1 text-base font-semibold text-color-grey-5 hover:border-color-brand-2 hover:bg-color-brand-2">
+                Cadastrar
+              </button>
+              <p>ou</p>
+              <Link
+                className="flex h-12 w-full items-center justify-center  border border-color-brand-1 bg-color-grey-6 text-base font-semibold text-color-brand-1"
+                href={routes[1].path}>
+                Login
+              </Link>
+            </div>
+          </form>
+        </div>
       </main>
     </>
   );

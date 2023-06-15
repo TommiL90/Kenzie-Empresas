@@ -1,32 +1,41 @@
-import Container from "@/components/Container";
-import Header from "@/components/Header";
 import Image from "next/image";
 import image from "../../public/assets/Rectangle_init.svg";
-import styles from "./styles.module.scss";
 import { api } from "@/services/api";
 import Card from "@/components/Card";
 import { Suspense } from "react";
+import NavBar from "@/components/Header";
 
-interface IRoute {
+export interface IRoute {
   path: string;
   label: string;
 }
 
-interface ISector {
+ export interface ISector {
   id: string;
   name: string;
 }
 
-interface ICompany {
+ export interface ICompany {
   id: string;
   name: string;
   description: string;
   category_id: string;
 }
 
-const requestSectors = async () => {
+const routes: IRoute[] = [
+  {
+    path: "/login",
+    label: "Login"
+  },
+  {
+    path: "/register",
+    label: "Cadastro"
+  }
+];
+
+const retrieveSectors = async () => {
   try {
-    const response = await api("/categories/readAll");
+    const response = await api("sectors");
 
     return response.data;
   } catch (error) {
@@ -35,9 +44,9 @@ const requestSectors = async () => {
   }
 };
 
-const requestCompanies = async () => {
+const retrieveCompanies = async () => {
   try {
-    const response = await api("/companies/readAll");
+    const response = await api("companies");
 
     return response.data;
   } catch (error) {
@@ -45,49 +54,56 @@ const requestCompanies = async () => {
     throw new Error("Failed to fetch sectors");
   }
 };
+
 
 export default async function Home() {
-  const routes: IRoute[] = [
-    {
-      path: "/login",
-      label: "Login",
-    },
-    {
-      path: "/register",
-      label: "Cadastro",
-    },
-  ];
-
-  const sectors: ISector[] = await requestSectors();
-  const companies: ICompany[] = await requestCompanies();
+  const sectors: ISector[] = await retrieveSectors();
+  const companies: ICompany[] = await retrieveCompanies();
+  let sector: string;
+  const filteredList: ICompany[] = companies.filter((company) => (sector ? company.category_id === sector : true));
 
   return (
     <>
-      <Header routes={routes} />
+      <NavBar routes={routes} />
       <main>
-        <Container>
-          <div className={styles.div}>
-            <Image className={styles.image} src={image} alt="Home" />
-            <section className={styles.section}>
-              <select name="sectorOptions" id="sectorsOptions">
-                <option value="">Selecione o setor</option>
-                {sectors.map((sector: ISector) => (
-                  <option value={sector.id}>{sector.name}</option>
-                ))}
-              </select>
-              <section className={styles.list}>
-                <h1>Lista de Empresas</h1>
-                <Suspense>
-                  {companies &&
-                    companies.map((company: ICompany) => (
-                      <Card key={company.id} data={company} />
-                    ))}
-                </Suspense>
-              </section>
-            </section>
+        <div className="container my-8 flex h-[854px] justify-between gap-4">
+          <div className="h-full w-[48%]">
+            <Image src={image} alt="Home" className="h-full w-full object-cover" />
           </div>
-        </Container>
+          <section className="h-full w-[48%]">
+            <select
+              name="sectorOptions"
+              id="sectorsOptions"
+              className="apy-3 form-select block h-[50px] w-full appearance-none border-none bg-color-brand-1 px-4 pr-8 text-lg font-normal leading-relaxed text-color-grey-6 focus:border-none focus:outline-none"
+              // onChange={(e) => (sector = e.target.value)}
+              required>
+              <option value="" className="py-2">
+                Selecione o setor
+              </option>
+              {sectors.map((sector: ISector) => (
+                <option value={sector.id}>{sector.name}</option>
+              ))}
+            </select>
+            <section className="flex h-[91.5%] flex-col gap-4 px-4 shadow-default">
+              <h2 className="my-4 text-3xl font-bold text-color-grey-1">Lista de Empresas</h2>
+              <ul className="flex h-full flex-col gap-4 overflow-auto">
+                {companies &&
+                  companies.map((company: ICompany) => {
+                    const sector = sectors.find((e) => e.id === company.category_id);
+                    company.category_id = sector!.name;
+                    return (
+                      <Suspense key={company.id}>
+                        <Card data={company} />
+                      </Suspense>
+                    );
+                  })}
+              </ul>
+            </section>
+          </section>
+        </div>
       </main>
     </>
   );
 }
+
+
