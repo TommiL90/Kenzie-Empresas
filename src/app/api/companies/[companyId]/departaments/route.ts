@@ -1,8 +1,7 @@
 import { prisma } from "@/database/prisma";
-import { employeesListSchema } from "@/schemas/employee.schema";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { validToken } from "../../utils";
+import { validToken } from "../../../utils";
 
 export const GET = async (
   req: NextRequest,
@@ -22,7 +21,7 @@ export const GET = async (
   if (!authToken) {
     return NextResponse.json({ message: "Por favor informe o token de autorização" }, { status: 400 });
   }
-  
+
   const { jwtErrorMessage, userEmail, userId, userIsAdmin } = validToken(authToken);
 
   if (jwtErrorMessage) {
@@ -40,9 +39,10 @@ export const GET = async (
 
   try {
     const departaments = await prisma.department.findMany({
-      where: {company_id: companyId}, include: {employees: true}
+      where: { companyId: companyId },
+      include: { employees: true }
     });
-   
+
     return NextResponse.json(departaments);
   } catch (error) {
     if (error instanceof z.ZodError) return NextResponse.json({ message: error.flatten().fieldErrors }, { status: 400 });

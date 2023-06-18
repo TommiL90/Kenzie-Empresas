@@ -16,18 +16,18 @@ export const employeeSchema = z.object({
         })
         .join(" ");
     }),
-  email: z.string().email("Formato de email inválido").max(45, "O email pode ter no máximo 45 carecteres").nonempty(),
+  email: z.string().email("Formato de email inválido").max(150, "O email pode ter no máximo 150 carecteres").nonempty(),
   password: z.string().min(8).max(32).nonempty(),
-  is_admin: z.boolean(),
-  company_id: z.string().nullish(),
-  department_id: z.string().nullish()
+  isAdmin: z.boolean(),
+  companyId: z.string().nullish(),
+  departamentId: z.string().nullish()
 });
 
 export const employeeRegisterSchema = employeeSchema.omit({
   id: true,
-  is_admin: true,
-  company_id: true,
-  department_id: true
+  isAdmin: true,
+  companyId: true,
+  departamentId: true
 });
 
 export const employeeReturnSchema = employeeSchema.omit({
@@ -36,4 +36,16 @@ export const employeeReturnSchema = employeeSchema.omit({
 
 export const employeesListSchema = z.array(employeeReturnSchema);
 
-export const UpdateEmployeeSchema = employeeSchema.partial();
+export const updateEmployeeSchema = employeeSchema.partial().omit({
+  id: true,
+  isAdmin: true,
+  companyId: true,
+  departamentId: true
+});
+
+export const updateEmployeeByAdminSchema = employeeSchema.partial().omit({
+  id: true,
+  name: true,
+  email: true,
+  password: true
+});

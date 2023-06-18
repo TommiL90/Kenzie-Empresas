@@ -1,8 +1,8 @@
 import { prisma } from "@/database/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { validToken } from "../../utils";
-import { TEmployeeCreateRequest } from "@/interfaces/employee.interface";
-import { UpdateEmployeeSchema, employeeReturnSchema } from "@/schemas/employee.schema";
+import { TEmployee } from "@/interfaces/employee.interface";
+import { updateEmployeeSchema, employeeReturnSchema, updateEmployeeByAdminSchema } from "@/schemas/employee.schema";
 import { z } from "zod";
 
 export const PATCH = async (
@@ -10,11 +10,23 @@ export const PATCH = async (
   {
     params
   }: {
-    params: { id: string };
+    params: { userId: string };
   }
 ) => {
-  let body: Partial<TEmployeeCreateRequest>;
+  let body: Partial<TEmployee>;
   const authToken = req.headers.get("authorization");
+  if (!authToken) {
+    return NextResponse.json({ message: "Por favor informe o token de autorização" }, { status: 401 });
+  }
+  const { jwtErrorMessage, userEmail, userId, userIsAdmin } = validToken(authToken);
+
+  if (jwtErrorMessage) {
+    return NextResponse.json({ message: jwtErrorMessage }, { status: 401 });
+  }
+
+  if (!params.userId) {
+    return NextResponse.json({ message: "Usuário não encontrado, por favor verifique o id informado" }, { status: 404 });
+  }
 
   try {
     body = await req.json();
@@ -22,21 +34,7 @@ export const PATCH = async (
     return NextResponse.json({ message: "invalid body" }, { status: 400 });
   }
 
-  if (!authToken) {
-    return NextResponse.json({ message: "Por favor informe o token de autorização" }, { status: 401 });
-  }
-
-  const { jwtErrorMessage, userEmail, userId, userIsAdmin } = validToken(authToken);
-
-  if (jwtErrorMessage) {
-    return NextResponse.json({ message: jwtErrorMessage }, { status: 401 });
-  }
-
-  if (!params.id) {
-    return NextResponse.json({ message: "Usuário não encontrado, por favor verifique o id informado" }, { status: 404 });
-  }
-
-  if (!userIsAdmin || params.id !== userId) {
+  if (!userIsAdmin && params.userId !== userId) {
     return NextResponse.json(
       {
         message: "Apenas usuários adminstradores podem atualizar estas informações ou o dono da conta"
@@ -46,11 +44,28 @@ export const PATCH = async (
   }
 
   const user = await prisma.employee.findUnique({
-    where: { id: params.id }
+    where: { id: params.userId }
   });
 
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
+  }
+
+  if (userIsAdmin) {
+    try {
+      const updatedEmployee = await prisma.employee.update({
+        where: {
+          id: params.userId
+        },
+        data: updateEmployeeByAdminSchema.parse(body)
+      });
+
+      const responseUpdatedEmployee = employeeReturnSchema.parse(updatedEmployee);
+
+      return NextResponse.json(responseUpdatedEmployee, { status: 200 });
+    } catch (error) {
+      if (error instanceof z.ZodError) return NextResponse.json({ message: error.flatten().fieldErrors }, { status: 400 });
+    }
   }
 
   if (body.email === user.email) {
@@ -77,9 +92,9 @@ export const PATCH = async (
   try {
     const updatedEmployee = await prisma.employee.update({
       where: {
-        id: params.id
+        id: params.userId
       },
-      data: UpdateEmployeeSchema.parse(body)
+      data: updateEmployeeSchema.parse(body)
     });
 
     const responseUpdatedEmployee = employeeReturnSchema.parse(updatedEmployee);
@@ -95,7 +110,7 @@ export const DELETE = async (
   {
     params
   }: {
-    params: { id: string };
+    params: { userId: string };
   }
 ) => {
   const authToken = req.headers.get("authorization");
@@ -110,11 +125,11 @@ export const DELETE = async (
     return NextResponse.json({ message: jwtErrorMessage }, { status: 401 });
   }
 
-  if (!params.id) {
+  if (!params.userId) {
     return NextResponse.json({ message: "Usuário não encontrado, por favor verifique o id informado" }, { status: 404 });
   }
 
-  if (!userIsAdmin || params.id !== userId) {
+  if (!userIsAdmin) {
     return NextResponse.json(
       {
         message: "Apenas usuários adminstradores podem atualizar estas informações ou o dono da conta"
@@ -122,20 +137,18 @@ export const DELETE = async (
       { status: 401 }
     );
   }
-
+  console.log("aquiiii");
   const user = await prisma.employee.findUnique({
-    where: { id: params.id }
+    where: { id: params.userId }
   });
 
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
 
-  const updatedEmployee = await prisma.employee.delete({
-    where: {
-      id: params.id
-    }
+  await prisma.employee.delete({
+    where: { id: params.userId }
   });
 
-  return NextResponse.json("", { status: 204 });
+  return new NextResponse(null, { status: 204 })
 };

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { employeeReturnSchema } from "./employee.schema";
-import { departamentSchema } from "./departament.schema";
+import { departmentSchema } from "./department.schema";
 
 export const companySchema = z.object({
   id: z.string().uuid(),
@@ -18,9 +18,13 @@ export const companySchema = z.object({
         })
         .join(" ");
     }),
-  description: z.string().email("Formato de email inválido").max(45, "O email pode ter no máximo 45 carecteres").nonempty(),
-  category_id: z.string().nonempty().uuid(),
-  departaments: z.array(departamentSchema).optional(),
+  description: z
+    .string()
+    .min(5, "Descrição precisaminimo 5 caracteres")
+    .max(50, "A descrição pode ter no máximo 50 carecteres")
+    .nonempty("Parametro obrigatorio"),
+  categoryId: z.string().nonempty().uuid(),
+  departaments: z.array(departmentSchema).optional(),
   employees: z.array(employeeReturnSchema).optional()
 });
 
@@ -35,6 +39,6 @@ export const editcompanySchema = companySchema.pick({
 });
 
 export const hireUser = z.object({
-  user_uuid: z.string().uuid().nonempty(),
-  department_uuid: z.string().uuid().nonempty()
+  userId: z.string().uuid().nonempty(),
+  departmentId: z.string().uuid().nonempty()
 });

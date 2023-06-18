@@ -5,7 +5,7 @@ interface ModalDeleteUserProps {
   toggleModal: () => void;
 }
 
-export const ModalDeletetDepartament = ({ toggleModal }: ModalDeleteUserProps) => {
+export const ModalDeletetDepartment = ({ toggleModal }: ModalDeleteUserProps) => {
   return (
     <Modal toggleModal={toggleModal}>
       <div className="flex h-[292px] w-[733px] items-center justify-center bg-color-grey-6 p-8">

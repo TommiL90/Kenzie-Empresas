@@ -1,10 +1,10 @@
 "use client";
 import { TCompany } from "@/interfaces/company.interfaces";
-import { TEmployeeReturn, TEmployeesList } from "@/interfaces/employee.interface";
+import { TEmployeeReturn } from "@/interfaces/employee.interface";
 import { useState } from "react";
 import { BsPencil, BsTrashFill } from "react-icons/bs";
 import { ModalEditUser } from "../Modal/EditUser";
-import { ModalDeletetUser } from "../Modal/DeleteUser";
+
 
 interface DeckProps {
   user: TEmployeeReturn;
@@ -18,7 +18,7 @@ const DeckEmployee = ({ user, enterprises }: DeckProps) => {
   const handleOpenEditUser = () => setIsOpenModalEditUser(!isOpenModalEditUser);
   const handleOpenDeleteUser = () => setIsOpenModalDeleteUser(!isOpenModalDeleteUser);
 
-  const enterprise = enterprises.find((enterprise) => enterprise.id === user.company_id);
+  const enterprise = enterprises.find((enterprise) => enterprise.id === user.companyId);
   return (
     <li className="flex h-[196px] w-[489px] justify-between border border-color-brand-1 p-6">
       <div className="space-y-1">
@@ -33,8 +33,8 @@ const DeckEmployee = ({ user, enterprises }: DeckProps) => {
           <BsTrashFill size={32} className="text-color-error" />
         </button>
       </div>
-      {isOpenModalEditUser && <ModalEditUser toggleModal={handleOpenEditUser}/>}
-      {isOpenModalDeleteUser && <ModalDeletetUser toggleModal={handleOpenDeleteUser}/>}
+      {isOpenModalEditUser && <ModalEditUser toggleModal={handleOpenEditUser} />}
+      {/* {isOpenModalDeleteUser && <ModalDeletetUser toggleModal={handleOpenDeleteUser} />} */}
     </li>
   );
 };

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { employeeReturnSchema } from "./employee.schema";
 
-export const departamentSchema = z.object({
+export const departmentSchema = z.object({
   id: z.string(),
   name: z
     .string()
@@ -17,18 +17,20 @@ export const departamentSchema = z.object({
         })
         .join(" ");
     }),
-  description: z.string().email("Formato de email inválido").max(45, "O email pode ter no máximo 45 carecteres").nonempty(),
-  company_id: z.string().nonempty().uuid(),
+  description: z
+    .string()
+    .min(5, "A descrição precisa ter no minimo 5 caracteres")
+    .max(45, "A descrição pode ter no máximo 50 carecteres")
+    .nonempty("arametro obrigatorio"),
+  companyId: z.string().nonempty().uuid(),
   employees: z.array(employeeReturnSchema).optional()
 });
 
+export const createDepartmentSchema = departmentSchema.omit({
+  id: true,
+  employees: true
+});
 
-export const createDepartamentSchema = departamentSchema.omit({
-    id: true,
-    employees: true
-})
-
-export const editDepartamentSchema = departamentSchema.pick({
-    description: true
-})
-
+export const editDepartmentSchema = departmentSchema.pick({
+  description: true
+});

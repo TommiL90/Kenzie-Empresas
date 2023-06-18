@@ -22,15 +22,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const token = cookieStore.get("@kenzie-empresas:token")?.value;
 
   api.defaults.headers.common.authorization = `Bearer ${token}`;
-  
+
   return (
     <html lang="pt-Br">
       <body className={inter.className}>
         <>
-          {children} <Toaster />
+          {children}
+          <Toaster />
         </>
       </body>
     </html>
   );
 }
-

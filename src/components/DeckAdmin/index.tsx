@@ -1,17 +1,17 @@
 "use client";
 import { TCompany } from "@/interfaces/company.interfaces";
-import { TDepartament } from "@/interfaces/departament.interfaces";
 import { useState } from "react";
 import { BsEye, BsPencil, BsTrashFill } from "react-icons/bs";
-import { ModalDepartament } from "../Modal/DepartamentModal";
-import { ModalEditDepartament } from "../Modal/EditDepartament";
-import { ModalDeletetDepartament } from "../Modal/DeleteDepartament";
+import { ModalDepartament } from "../Modal/DepartmentModal";
 import { TEmployeesList } from "@/interfaces/employee.interface";
+import { TDepartment } from "@/interfaces/department.interfaces";
+import { ModalEditDepartment } from "../Modal/EditDepartment";
+import { ModalDeletetDepartment } from "../Modal/DeleteDepartment";
 
 interface DeckProps {
-  departament: TDepartament;
+  departament: TDepartment;
   enterprises: TCompany[];
-  users: TEmployeesList
+  users: TEmployeesList;
 }
 
 const DeckAdmin = ({ departament, enterprises, users }: DeckProps) => {
@@ -23,8 +23,8 @@ const DeckAdmin = ({ departament, enterprises, users }: DeckProps) => {
   const handleOpenEditDepartament = () => setIsOpenModalEditDepartament(!isOpenModalEditDepartament);
   const handleOpenDeleteDepartament = () => setIsOpenModalDeleteDepartament(!isOpenModalDeleteDepartament);
 
-  const enterprise = enterprises.find((enterprise) => enterprise.id === departament.company_id);
-  const employees = departament.employees
+  const enterprise = enterprises.find((enterprise) => enterprise.id === departament.companyId);
+  const employees = departament.employees;
 
   return (
     <li className="flex h-[196px] w-[489px] justify-between border border-color-brand-1 p-6">
@@ -44,9 +44,11 @@ const DeckAdmin = ({ departament, enterprises, users }: DeckProps) => {
           <BsTrashFill size={32} className="text-color-error" />
         </button>
       </div>
-      {isOpenModalDepartament && <ModalDepartament toggleModal={handleOpenDepartament} users={users} employees={employees}/>}
-      {isOpenModalEditDepartament && <ModalEditDepartament toggleModal={handleOpenEditDepartament} />}
-      {isOpenModalDeleteDepartament && <ModalDeletetDepartament toggleModal={handleOpenDeleteDepartament} />}
+      {isOpenModalDepartament && (
+        <ModalDepartament toggleModal={handleOpenDepartament} users={users} employees={employees} departamentId={departament.id} />
+      )}
+      {isOpenModalEditDepartament && <ModalEditDepartment toggleModal={handleOpenEditDepartament} />}
+      {isOpenModalDeleteDepartament && <ModalDeletetDepartment toggleModal={handleOpenDeleteDepartament} />}
     </li>
   );
 };

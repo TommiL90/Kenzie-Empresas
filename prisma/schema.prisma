@@ -5,10 +5,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// datasource db {
+//   provider  = "postgresql"
+//   url       = env("DATABASE_URL") // uses connection pooling
+//   directUrl = env("DIRECT_URL") // uses a direct connection
+// }
+
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL") // uses connection pooling
-  directUrl = env("DIRECT_URL") // uses a direct connection
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Category {
@@ -23,8 +28,8 @@ model Company {
   id          String       @id @unique @default(uuid())
   name        String       @unique
   description String
-  category    Category     @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  category_id String
+  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  String?      
   departments Department[]
   employees   Employee[]
 
@@ -35,8 +40,8 @@ model Department {
   id          String     @id @unique @default(uuid())
   name        String
   description String
-  company     Company    @relation(fields: [company_id], references: [id], onDelete: Cascade)
-  company_id  String
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
   employees   Employee[]
 
   @@map("departments")
@@ -47,11 +52,11 @@ model Employee {
   name          String
   email         String      @unique
   password      String
-  is_admin      Boolean     @default(false)
-  company       Company?    @relation(references: [id], fields: [company_id], onDelete: Cascade)
-  company_id    String?
-  department    Department? @relation(fields: [department_id], references: [id], onDelete: SetNull)
-  department_id String?
+  isAdmin       Boolean     @default(false)
+  company       Company?    @relation(references: [id], fields: [companyId], onDelete: Cascade)
+  companyId     String?
+  department    Department? @relation(fields: [departamentId], references: [id], onDelete: SetNull)
+  departamentId String?
 
   @@map("employees")
 }

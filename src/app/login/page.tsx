@@ -64,7 +64,7 @@ function Login() {
     setLoading(true);
     try {
       const response = await api.post<ILoginUser>("/auth/login", formData);
-      console.log(response.data);
+
       const { accessToken } = response.data;
 
       api.defaults.headers.common.authorization = `Bearer ${accessToken}`;

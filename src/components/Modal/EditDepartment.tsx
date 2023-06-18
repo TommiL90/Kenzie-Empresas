@@ -6,7 +6,7 @@ interface ModalEditDepartamentProps {
   toggleModal: () => void;
 }
 
-export const ModalEditDepartament = ({ toggleModal }: ModalEditDepartamentProps) => {
+export const ModalEditDepartment = ({ toggleModal }: ModalEditDepartamentProps) => {
   return (
     <Modal toggleModal={toggleModal}>
       <div className="flex w-[506px] flex-col gap-4 bg-color-grey-6 p-8">

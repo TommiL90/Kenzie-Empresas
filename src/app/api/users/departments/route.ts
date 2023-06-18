@@ -8,36 +8,29 @@ export const GET = async (req: NextRequest) => {
   const authToken = req.headers.get("authorization");
 
   if (!authToken) {
-    return NextResponse.json(
-      "Categoria inválida, por favor verifique o id da categoria informada e tente novamente",
-      { status: 401 }
-    );
+    return NextResponse.json("Categoria inválida, por favor verifique o id da categoria informada e tente novamente", { status: 401 });
   }
 
-  const { jwtErrorMessage, userEmail, userId, userIsAdmin } =
-    validToken(authToken);
+  const { jwtErrorMessage, userEmail, userId, userIsAdmin } = validToken(authToken);
 
   if (jwtErrorMessage) {
     return NextResponse.json(jwtErrorMessage, { status: 401 });
   }
 
   const user = await prisma.employee.findUnique({
-    where: { email: userEmail },
+    where: { email: userEmail }
   });
 
-  if (!user?.department_id) {
-    return NextResponse.json(
-      "usuario não se encontra registrado em nenhum departamento.",
-      { status: 401 }
-    );
+  if (!user?.departamentId) {
+    return NextResponse.json("usuario não se encontra registrado em nenhum departamento.", { status: 401 });
   }
   const departament = await prisma.department.findUnique({
-    where: { id: user.department_id },
-    include: { company: true },
+    where: { id: user.departamentId },
+    include: { company: true }
   });
 
   const departaments = await prisma.department.findMany({
-    where: { company_id: departament?.company_id },
+    where: { companyId: departament?.companyId }
   });
 
   return NextResponse.json(departaments, { status: 200 });

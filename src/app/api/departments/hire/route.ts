@@ -6,7 +6,7 @@ import { validToken } from "../../utils";
 
 type TBody = z.infer<typeof hireUser>;
 
-export const POST = async (req: NextRequest) => {
+export const PATCH = async (req: NextRequest) => {
   const authToken = req.headers.get("authorization");
   let body: TBody;
 
@@ -40,7 +40,7 @@ export const POST = async (req: NextRequest) => {
 
     const checkUser = await prisma.employee.findUnique({
       where: {
-        id: bodySerializer.user_uuid
+        id: bodySerializer.userId
       }
     });
 
@@ -48,7 +48,7 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json({ message: "Usuário não encontrado, por favor verifique o id informado" }, { status: 404 });
     }
 
-    if (checkUser.department_id !== null) {
+    if (checkUser.departamentId !== null) {
       return NextResponse.json(
         {
           message:
@@ -60,7 +60,7 @@ export const POST = async (req: NextRequest) => {
 
     const checkDepartament = await prisma.department.findUnique({
       where: {
-        id: bodySerializer.department_uuid
+        id: bodySerializer.departmentId
       },
       include: { company: true }
     });
@@ -71,20 +71,23 @@ export const POST = async (req: NextRequest) => {
 
     const hireEmployee = await prisma.employee.update({
       where: {
-        id: bodySerializer.user_uuid
+        id: bodySerializer.userId
       },
       data: {
-        department_id: bodySerializer.department_uuid,
-        company_id: checkDepartament.id
+        departamentId: bodySerializer.departmentId,
+        companyId: checkDepartament.companyId
       }
     });
 
-    const { password, ...rest } = hireEmployee
-    return NextResponse.json({
+    const { password, ...rest } = hireEmployee;
+    console.log(rest);
+    return NextResponse.json(
+      {
         message: `Funcionário contratado para o departamento ${checkDepartament.name}`,
         employee: rest
-      }, { status: 200 });
-  
+      },
+      { status: 200 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) return NextResponse.json({ message: error.flatten().fieldErrors }, { status: 400 });
   }

@@ -6,7 +6,7 @@ interface ModalCreateDepartamentProps {
     toggleModal: () => void
   }
   
-  export const ModalCreateDepartament = ({ toggleModal }: ModalCreateDepartamentProps) => {
+  export const ModalCreateDepartment = ({ toggleModal }: ModalCreateDepartamentProps) => {
 
 
     return (

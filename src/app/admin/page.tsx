@@ -1,78 +1,14 @@
 "use client";
 
-import { ModalCreateDepartament } from "@/components/Modal/CreateDepartamentModal";
-import { api } from "@/services/api";
-import React, { ChangeEvent, lazy, useEffect, useState } from "react";
-import { ICompany } from "../page";
-import { TDepartament } from "../../interfaces/departament.interfaces";
-import { TEmployeesList } from "../../interfaces/employee.interface";
+import { ModalCreateDepartment } from "@/components/Modal/CreateDepartmentModal";
+import React from "react";
 import DeckAdmin from "@/components/DeckAdmin";
-import DeckEmployee from "@/components/DeckEmploye";
-import { parseCookies } from "nookies";
-import { useRouter } from "next/navigation";
+import DeckEmployee from "@/components/DeckEmployee";
+import { useAdmin } from "@/hooks/useAdmin";
 
-const retrieveCompanies = async () => {
-  try {
-    const response = await api("companies");
-
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw new Error("Failed to fetch sectors");
-  }
-};
 
 const AdminPage = async () => {
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-  const [companies, setCompanies] = useState<ICompany[]>([]);
-  const [departaments, setDepartaments] = useState<TDepartament[]>([]);
-  const [users, setUsers] = useState<TEmployeesList>([]);
-
-  const router = useRouter();
-
-  const cookies = parseCookies();
-  const token = cookies["@kenzie-empresas:token"];
-  
-
-  if (!token) {
-    router.push("/login");
-  }
-
-  const handleSelectChange = async (event: ChangeEvent<HTMLSelectElement>) => {
-    event.preventDefault();
-    try {
-      const responseDepartments = await api(`departaments/${event.target.value}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setDepartaments(responseDepartments.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const toggleModal = () => setIsOpenModal(!isOpenModal);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const companies = await retrieveCompanies();
-        setCompanies(companies);
-
-        const responseUsers = await api("users", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setUsers(responseUsers.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const {isOpenModal, toggleModal, companies, departaments, users, handleSelectChange } = useAdmin()
 
   return (
     <>
@@ -119,7 +55,7 @@ const AdminPage = async () => {
           </ul>
         </section>
       </div>
-      {isOpenModal && <ModalCreateDepartament toggleModal={toggleModal} />}
+      {isOpenModal && <ModalCreateDepartment toggleModal={toggleModal} />}
     </>
   );
 };

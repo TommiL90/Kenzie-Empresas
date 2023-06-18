@@ -10,16 +10,16 @@ export interface IRoute {
   label: string;
 }
 
- export interface ISector {
+export interface ISector {
   id: string;
   name: string;
 }
 
- export interface ICompany {
+export interface ICompany {
   id: string;
   name: string;
   description: string;
-  category_id: string;
+  categoryId: string;
 }
 
 const routes: IRoute[] = [
@@ -55,12 +55,11 @@ const retrieveCompanies = async () => {
   }
 };
 
-
 export default async function Home() {
   const sectors: ISector[] = await retrieveSectors();
   const companies: ICompany[] = await retrieveCompanies();
   let sector: string;
-  const filteredList: ICompany[] = companies.filter((company) => (sector ? company.category_id === sector : true));
+  const filteredList: ICompany[] = companies.filter((company) => (sector ? company.categoryId === sector : true));
 
   return (
     <>
@@ -89,8 +88,8 @@ export default async function Home() {
               <ul className="flex h-full flex-col gap-4 overflow-auto">
                 {companies &&
                   companies.map((company: ICompany) => {
-                    const sector = sectors.find((e) => e.id === company.category_id);
-                    company.category_id = sector!.name;
+                    const sector = sectors.find((e) => e.id === company.categoryId);
+                    company.categoryId = sector!.name;
                     return (
                       <Suspense key={company.id}>
                         <Card data={company} />
@@ -105,5 +104,3 @@ export default async function Home() {
     </>
   );
 }
-
-

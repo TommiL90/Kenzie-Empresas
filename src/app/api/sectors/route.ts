@@ -1,5 +1,5 @@
 import { prisma } from "@/database/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 
 
